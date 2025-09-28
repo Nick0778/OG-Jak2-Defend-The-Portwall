@@ -82,7 +82,7 @@
     )
   :trans (behavior ()
     (check-current-sound self)
-    (format *stdcon* "cur-frame: ~D~%" (the int (-> self cur-frame)))
+    ;(format *stdcon* "cur-frame: ~D~%" (the int (-> self cur-frame)))
     )
   :code (behavior ()
     (until #f
