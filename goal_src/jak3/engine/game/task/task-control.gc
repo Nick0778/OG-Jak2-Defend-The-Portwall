@@ -3422,3 +3422,25 @@
       (lookup-text! *common-text* (text-id discord-rpc-not-in-mission) #f)
     )
   )
+
+(process-spawn-function process
+  (lambda :behavior process ()
+    (loop
+      ;; Sewer Scoutbot
+      (when (= (level-status? *level* 'sewh #f) 'active)
+        (when (entity-by-name "scoutbot-9")
+          (logclear! (-> (entity-by-name "scoutbot-9") extra kill-mask) (task-mask never))
+          (set! (-> (the (pointer uint32) (get-tag-index-data (entity-by-name "scoutbot-9") 6))) (the uint (the pointer 67294)))
+          (set! (-> (the (pointer meters) (get-tag-index-data (entity-by-name "scoutbot-9") 5))) 819200.0)
+          (add-data! (entity-by-name "scoutbot-9") (new 'static 'res-tag :name 'alt-actor :key-frame -1000000000.0 :elt-count 1 :elt-type uint32) (the pointer (the pointer 67421)))
+          (set! (-> (the (pointer uint32) (get-tag-index-data (entity-by-name "scoutbot-9") 4))) (the uint (the pointer 0)))
+          )
+        (when (entity-by-name "battle-99")
+          (set! (-> (the (pointer pair) (get-tag-index-data (entity-by-name "battle-99") 1))) (the pair '(send-event "scoutbot-9" 'trigger)))
+          )
+        )
+      (suspend)
+      )
+    )
+  )
+  
