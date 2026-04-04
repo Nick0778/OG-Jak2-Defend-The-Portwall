@@ -765,6 +765,13 @@ struct DrawableInlineArrayActor {
                       GameVersion version);
 };
 
+struct DrawableInlineArrayAmbient {
+  std::vector<DrawableAmbient> drawable_ambients;
+  void read_from_file(TypedRef ref,
+                      const decompiler::DecompilerTypeSystem& dts,
+                      GameVersion version);
+};
+
 struct CollideHash {
   Ref item_array;
   int num_items = 0;
