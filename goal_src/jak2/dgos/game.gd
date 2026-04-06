@@ -475,5 +475,6 @@
   "mod-common-functions.o" ;; added
   "orb-placer.o"  ;; added
   "mod-custom-code.o" ;; added
+  "nick-nav-graph-editor.o" ;; added - nick-nav-graph-editor
   "mod-debug.o" ;; added
  ))

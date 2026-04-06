@@ -1,0 +1,572 @@
+;;-*-Lisp-*-
+(in-package goal)
+
+(declare-file (debug))
+
+(defenum nick-nav-mode
+  :type int32
+  (preview 0)
+  (edit 1)
+  (moving-node 2)
+  )
+
+(defenum nick-nav-edit-mode
+  :type int32
+  (path 0)
+  (nav-network 1)
+  )
+
+(defenum nick-nav-flags
+  :type int32
+  :bitfield #t
+  (display-spheres 0)
+  )
+
+(defenum nick-nav-path-type
+  :type int32
+  (linear 0)
+  (curved 1)
+  )
+
+(deftype nick-nav-editor (process)
+  ((nodes           vector 100 :inline)
+   (knots           float 100)
+   (node-count      int32)
+   (mode            nick-nav-mode)
+   (edit-mode       nick-nav-edit-mode)
+   (flags           nick-nav-flags)
+   (selected-node   int32)
+   (path-type       nick-nav-path-type)
+   )
+  (:state-methods
+    idle
+    )
+  (:methods
+    (start-editor! (_type_) none)
+    (update-editor! (_type_) none)
+    )
+  )
+
+(define *nick-nav-editor* (the (pointer nick-nav-editor) #f))
+
+(define *nick-nav-toggle-preview-edge?* #t)
+
+(define *nick-nav-path-type* (nick-nav-path-type linear))
+
+(defun nick-nav-add-node ((nav-editor nick-nav-editor))
+  "Add a new node at jak's current position."
+  (let* ((idx (-> nav-editor node-count))
+          (selected (-> nav-editor selected-node))
+          (last-idx (- (-> nav-editor node-count) 1))
+          )
+    ;; only add a node when the array isn't full
+    ;; and when the last node is selected
+    ;; or when there's nothing selected
+    (when (and (< idx 100) (or (= selected last-idx) (= selected -1)))
+      (vector-copy! (-> nav-editor nodes idx) (target-pos 0))
+      (let ((pos (-> nav-editor nodes idx)))
+        (+! (-> nav-editor node-count) 1)
+        (set! (-> nav-editor selected-node) idx)
+        (format 0 "[NICK NAV EDITOR]: node ~D added in: ~4,,2m ~4,,2m ~4,,2m~%" idx (-> pos x) (-> pos y) (-> pos z) (-> pos w))
+        (sound-play "menu-pick")
+        )
+      )
+    (when (and (!= selected last-idx) (!= selected -1))
+      (format 0 "[NICK NAV EDITOR]: ERROR - select the last node (~D) to add more nodes!~%" last-idx)
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-remove-last-node ((nav-editor nick-nav-editor))
+  "Remove the last node of the graph."
+  (let* ((selected (-> nav-editor selected-node))
+          (last-idx (- (-> nav-editor node-count) 1))
+          )
+    (when (and (> (-> nav-editor node-count) 0) (or (= selected last-idx) (= selected -1)))
+      (+! (-> nav-editor node-count) -1)
+      (+! (-> nav-editor selected-node) -1)
+      (sound-play "menu-back")
+      (format 0 "[NICK NAV EDITOR]: last node removed. total node count now: ~D~%" (-> nav-editor node-count))
+      )
+    (when (and (!= selected last-idx) (!= selected -1))
+      (format 0 "[NICK NAV EDITOR]: ERROR - select the last node (~D) to delete it!~%" last-idx)
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-draw-node-ids ((nav-editor nick-nav-editor))
+  "Draw every node id."
+  (dotimes (i (-> nav-editor node-count))
+    (let ((pos (-> nav-editor nodes i)))
+      (format (clear *temp-string*) "~D" i)
+      (add-debug-text-3d #t (the-as bucket-id 318) *temp-string* pos (font-color orange) (the-as vector2h #f))
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-selected-node-navigation ((nav-editor nick-nav-editor) (direction int))
+  "Navigate through the existing nodes."
+  (let ((count (-> nav-editor node-count)))
+    (when (> count 0)
+      (+! (-> nav-editor selected-node) direction)
+      (if (>= (-> nav-editor selected-node) count)
+        (set! (-> nav-editor selected-node) 0)
+        )
+      (if (< (-> nav-editor selected-node) 0)
+        (set! (-> nav-editor selected-node) (- count 1))
+        )
+      ;(format 0 "[NICK NAV EDITOR]: selected node: ~D~%" (-> nav-editor selected-node))
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-move-selected-node ((nav-editor nick-nav-editor))
+  "Move the selected node to jak's current position."
+  (let ((idx (-> nav-editor selected-node)))
+    (when (and (>= idx 0) (< idx (-> nav-editor node-count)))
+      (vector-copy! (-> nav-editor nodes idx) (target-pos 0))
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-draw-nav-graph ((nav-editor nick-nav-editor))
+  "Draw the full nav graph (nodes spheres and edges)"
+
+  ;; draw the graph nodes (spheres, points and ids)
+  (let ((count (-> nav-editor node-count)))
+    (dotimes (i count)
+      (let* ((pos (-> nav-editor nodes i))
+             (is-selected? (= (-> nav-editor selected-node) i))
+             )
+        (when (logtest? (-> nav-editor flags) (nick-nav-flags display-spheres)) ;; display spheres only in edit mode
+          (if is-selected?
+            (add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-orange*)
+            (add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-red*)
+            )
+          )
+        ;(add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-red*)
+        (add-debug-x #t (bucket-id debug-no-zbuf1) pos (new 'static 'rgba :r #xff :a #x80))
+        )
+      )
+    
+    ;; draw node ID's
+    (nick-nav-draw-node-ids nav-editor)
+
+    ;; draw the edge if there are at least 2 nodes
+    (when (>= count 2)
+      (dotimes (i (- count 1))
+        (let* ((node1 (-> nav-editor nodes i))
+               (node2 (-> nav-editor nodes (+ i 1)))
+               )
+
+          (cond
+            ((= (-> nav-editor path-type) (nick-nav-path-type linear)) ;; linear path type mode
+              (add-debug-line #t (bucket-id debug-no-zbuf1) node1 node2 (new 'static 'rgba :r #xff :g #x80 :a #x80) #f (the-as rgba -1))
+              )
+            (else ;; curved path type mode
+              (let ((prev-pos (new 'stack-no-clear 'vector)))
+                (vector-copy! prev-pos node1)
+                
+                (let ((p0 (-> nav-editor nodes (max 0 (- i 1))))
+                      (p1 node1)
+                      (p2 node2)
+                      (p3 (-> nav-editor nodes (min (- count 1) (+ i 2)))))
+                  
+                  (dotimes (j 10)
+                    (let* ((t-val (/ (the float (+ j 1)) 10.0))
+                           (curr-pos (new 'stack-no-clear 'vector))
+                           ;; Catmull-Rom formulas for each axis
+                           (tt (* t-val t-val))
+                           (ttt (* tt t-val))
+                           )
+                      (dotimes (axis 3) ;; x, y, z
+                        (let ((v0 (-> p0 data axis))
+                              (v1 (-> p1 data axis))
+                              (v2 (-> p2 data axis))
+                              (v3 (-> p3 data axis)))
+                          ;; standard Catmull-Rom Spline equation
+                          (set! (-> curr-pos data axis)
+                                (* 0.5 (+ (* 2.0 v1)
+                                          (* t-val (- v2 v0))
+                                          (* tt (+ (* 2.0 v0) (* -5.0 v1) (* 4.0 v2) (- v3)))
+                                          (* ttt (+ (- v0) (* 3.0 v1) (* -3.0 v2) v3)))))
+                          )
+                        )
+                      (set! (-> curr-pos w) 1.0)
+                      (add-debug-line #t (bucket-id debug-no-zbuf1) prev-pos curr-pos (new 'static 'rgba :r #xff :g #x80 :a #x80) #f (the-as rgba -1))
+                      (vector-copy! prev-pos curr-pos)
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      )
+
+    ;; draw preview edge mode (draw it only in edit mode)
+    (when (and *nick-nav-toggle-preview-edge?* (> count 0) (= (-> nav-editor mode) (nick-nav-mode edit)) 
+               (= (-> nav-editor selected-node) (- count 1))
+               )
+      (let* ((node1 (-> nav-editor nodes (- count 1)))
+              (jak-pos (target-pos 0))
+              )
+        (add-debug-line #t (bucket-id debug-no-zbuf1) node1 jak-pos (new 'static 'rgba :r #xff :g #xff :b #xc0 :a #x80) #f (the-as rgba -1))
+        )
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-graph-clear-all ((nav-editor nick-nav-editor))
+  "Clear all the nav graph."
+  (when (and *nick-nav-editor* (> (-> nav-editor node-count) 0))
+    (set! (-> nav-editor node-count) 0)
+    (set! (-> nav-editor selected-node) -1)
+    (format 0 "[NICK NAV EDITOR]: nav graph cleared!~%")
+    )
+  (none)
+  )
+
+(defun nick-nav-menu-check-clear-all ()
+  "Function for the debug menu to clear all the nav graph."
+  (nick-nav-graph-clear-all (the nick-nav-editor (ppointer->process *nick-nav-editor*)))
+  (none)
+  )
+
+(defun nick-nav-menu-get-path-type ((type nick-nav-path-type))
+  "Function for the debug menu to get the path type mode (linear or curved)."
+  (if *nick-nav-editor*
+    (= (-> (the nick-nav-editor (ppointer->process *nick-nav-editor*)) path-type) type)
+    #f
+    )
+  )
+
+(defun nick-nav-menu-set-path-type ((type nick-nav-path-type))
+  "Function for the debug menu to set the path type mode (linear or curved)."
+  (when *nick-nav-editor*
+    (set! (-> (the nick-nav-editor (ppointer->process *nick-nav-editor*)) path-type) type)
+    )
+  type
+  )
+
+(defun nick-nav-menu-get-edit-mode ((edit-mode nick-nav-edit-mode))
+  "Function for the debug menu to get the editor mode (path or nav-network)."
+  (if *nick-nav-editor*
+    (= (-> (the nick-nav-editor (ppointer->process *nick-nav-editor*)) edit-mode) edit-mode)
+    #f
+    )
+  )
+
+(defun nick-nav-menu-set-edit-mode ((edit-mode nick-nav-edit-mode))
+  "Function for the debug menu to set the path type mode (linear or curved)."
+  (when *nick-nav-editor*
+    (set! (-> (the nick-nav-editor (ppointer->process *nick-nav-editor*)) edit-mode) edit-mode)
+    (nick-nav-graph-clear-all (the nick-nav-editor (ppointer->process *nick-nav-editor*))) ;; clean all the existing graph
+    )
+  edit-mode
+  )
+
+(defun nick-nav-check-editor-mode ((nav-editor nick-nav-editor))
+  "Return the string from the editor's current edit mode name."
+  (let ((edit-mode (the string #f)))
+    (cond
+      ((= (-> nav-editor edit-mode) (nick-nav-edit-mode path))
+        (set! edit-mode "path")
+        )
+      ((= (-> nav-editor edit-mode) (nick-nav-edit-mode nav-network))
+        (set! edit-mode "nav network")
+        )
+      )
+    edit-mode
+    )
+  )
+
+(defun nick-nav-check-path-type ((nav-editor nick-nav-editor) (caps-mode symbol))
+  "Return the string from the editor's current path type mode name."
+  (let ((type (the string #f)))
+    (cond
+      ((= (-> nav-editor path-type) (nick-nav-path-type linear))
+        (if caps-mode
+          (set! type "LINEAR")
+          (set! type "linear")
+          )
+        )
+      ((= (-> nav-editor path-type) (nick-nav-path-type curved))
+        (if caps-mode
+          (set! type "CURVED")
+          (set! type "curved")
+          )
+        )
+      (else
+        (set! type "unknown")
+        )
+      )
+    type
+    )
+  )
+
+(defun nick-nav-draw-menu ((nav-editor nick-nav-editor))
+  "Draw a menu displaying the editor controls, info and status (preview or edit mode)."
+  (with-dma-buffer-add-bucket ((buf (-> *display* frames (-> *display* on-screen) debug-buf))
+                               (bucket-id debug2)
+                               )
+    (let* ((x 10)
+          (y 40)
+          (line-height 8)
+          )
+      (draw-string-xy "--- NICK NAV GRAPH EDITOR ---" buf x y (font-color white) (font-flags shadow))
+      (+! y 16)
+
+      (draw-string-xy (string-format "mode: ~s" (nick-nav-check-editor-mode nav-editor)) buf x y (font-color white) (font-flags shadow))
+      (+! y 8)
+
+      (draw-string-xy (string-format "nodes: ~d / 100" (-> nav-editor node-count)) buf x y (font-color white) (font-flags shadow))
+      (+! y 8)
+
+      (when (= (-> nav-editor edit-mode) (nick-nav-edit-mode path))
+        (draw-string-xy (string-format "path type: ~s" (nick-nav-check-path-type nav-editor #f)) buf x y (font-color white) (font-flags shadow))
+        (+! y 8)
+        )
+
+      (draw-string-xy "-----------------------------" buf x y (font-color white) (font-flags shadow))
+      (+! y 16)
+
+      (cond
+        ((= (-> nav-editor edit-mode) (nick-nav-edit-mode path)) ;; path editor mode
+          (cond
+            ((= (-> nav-editor mode) (nick-nav-mode edit)) ;; edit mode
+
+              (if (= (-> nav-editor selected-node) (- (-> nav-editor node-count) 1))
+                (draw-string-xy "[R3]: add node" buf x y (font-color white) (font-flags shadow))
+                (draw-string-xy "[R3]: (blocked - select last node)" buf x y (font-color white) (font-flags shadow))
+                )
+              (+! y 8)
+
+              (if (= (-> nav-editor selected-node) (- (-> nav-editor node-count) 1))
+                (draw-string-xy "[L1 + R3]: delete last node" buf x y (font-color white) (font-flags shadow))
+                (draw-string-xy "[L1 + R3]: (blocked - select last node)" buf x y (font-color white) (font-flags shadow))
+                )
+              (+! y 8)
+
+              (draw-string-xy "[left/right]: select node" buf x y (font-color white) (font-flags shadow))
+              (+! y 8)
+
+              (draw-string-xy "[L3 + triangle]: move selected node" buf x y (font-color white) (font-flags shadow))
+              (+! y 8)
+
+              (draw-string-xy "[L1 + up]: switch to preview mode" buf x y (font-color white) (font-flags shadow))
+              (+! y 8)
+              )
+            ((= (-> nav-editor mode) (nick-nav-mode moving-node)) ;; moving node mode
+              (draw-string-xy "[L3 + triangle]: confirm selected node position" buf x y (font-color white) (font-flags shadow))
+              (+! y 8)
+              )
+            (else ;; preview mode
+              (draw-string-xy "[L1 + down]: switch to edit mode" buf x y (font-color white) (font-flags shadow))
+              (+! y 8)
+              )
+            )
+          )
+        (else ;; nav-network editor mode (TODO)
+          (draw-string-xy "[TODO]" buf x y (font-color white) (font-flags shadow))
+          (+! y 8)
+          )
+        )
+
+      (draw-string-xy "-----------------------------" buf x y (font-color white) (font-flags shadow))
+      (+! y 16)
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-print-jsonc-graph-data ((nav-editor nick-nav-editor))
+  "Print the nav graph data in console."
+  (let ((count (-> nav-editor node-count)))
+    (when (> count 0)
+      (format 0 "~%----- PATH OUTPUT START -----~%")
+
+      ;; print the path (cverts)
+      (format 0 "~%   \"path\": [\"vector4m\",~%")
+      (dotimes (i count)
+        (let ((node (-> nav-editor nodes i)))
+          (format 0 "     [~,,2m, ~,,2m, ~,,2m, 1.0]~S~%" (-> node x) (-> node y) (-> node z) (if (= (- count 1) i) "" ","))
+          )
+        )
+      (format 0 "    ],~%")
+      
+      ;; print the path-k (knots)
+      (format 0 "~%   \"path-k\": [\"float\",~%")
+      (let* ((num-knots (+ count 4))
+              ;(last-val (the float (max 0 (- count 3))))
+              (num-segments (- count 1))
+              (step (/ 1.0 (the float num-segments)))
+              )
+        (dotimes (i num-knots)
+          (cond
+            ((< i 4) ;; start clamp (first 4 are 0.0)
+              (format 0 "     0.0,~%")
+              )
+            ((>= i (- num-knots 4)) ;; end clamp
+              (format 0 "     1.0~S~%" (if (= (- num-knots 1) i) "" ","))
+              )
+            (else ;; intermediate steps
+              (format 0 "     ~f,~%" (* (the float (- i 3)) step))
+              )
+            )
+          )
+        )
+      (format 0 "    ]~%")
+      (format 0 "~%----- PATH OUTPUT END -----~%~%")
+      )
+    )
+  (none)
+  )
+
+(defun nick-nav-menu-print-jsonc-graph-data ()
+  "Function for the debug menu to print the nav graph data in console."
+  (nick-nav-print-jsonc-graph-data (the nick-nav-editor (ppointer->process *nick-nav-editor*)))
+  (none)
+  )
+
+(defmethod start-editor! ((this nick-nav-editor))
+  (format 0 "----- starting nick-nav-editor... -----~%")
+  (none)
+  )
+
+(defmethod update-editor! ((this nick-nav-editor))
+
+  ;; always draw the nav graph logic (must be always running)
+  (nick-nav-draw-nav-graph this)
+
+  ;; draw a menu displaying the editor controls and status (preview or edit mode) 
+  (nick-nav-draw-menu this)
+
+  (cond
+    ((= (-> this edit-mode) (nick-nav-edit-mode path)) ;; path editor mode
+      (cond
+        ((= (-> this mode) (nick-nav-mode edit)) ;; edit mode
+          (set-setting! 'allow-look-around #f 0.0 0) ;; disable jak look around setting
+
+          ;; add node (R3)
+          (when (cpad-pressed? 0 r3)
+            (when (not (cpad-hold? 0 l1))
+              (nick-nav-add-node this)
+              )
+            )
+
+          ;; remove last node (L1 + R3)
+          (when (cpad-hold? 0 l1)
+            (when (cpad-pressed? 0 r3)
+              (nick-nav-remove-last-node this)
+              )
+            )
+
+          ;; navigate (dpad left/right) through the existing nodes
+          (when (cpad-pressed? 0 left)
+            (nick-nav-selected-node-navigation this -1)
+            )
+
+          (when (cpad-pressed? 0 right)
+            (nick-nav-selected-node-navigation this 1)
+            )
+
+          ;; activate moving-node mode (L3 + triangle)
+          (when (cpad-hold? 0 l3)
+            (when (cpad-pressed? 0 triangle)
+              (sound-play "menu-pick")
+              (set! (-> this mode) (nick-nav-mode moving-node))
+              )
+            )
+
+          ;(format *stdcon* "nick-nav-editor: edit mode~%")
+
+          ;; enable spheres display
+          (when (not (logtest? (-> this flags) (nick-nav-flags display-spheres)))
+            (logior! (-> this flags) (nick-nav-flags display-spheres))
+            )
+          )
+        ((= (-> this mode) (nick-nav-mode moving-node)) ;; moving node mode
+          (nick-nav-move-selected-node this)
+
+          ;; return to edit mode and confirm node's new position (L3 + triangle)
+          (when (cpad-hold? 0 l3)
+            (when (cpad-pressed? 0 triangle)
+              (sound-play "menu-back")
+              (set! (-> this mode) (nick-nav-mode edit))
+              )
+            )
+          )
+        (else ;; preview mode
+          (remove-setting! 'allow-look-around) ;; enable jak look around setting
+          
+          ;; disable spheres display
+          (when (logtest? (-> this flags) (nick-nav-flags display-spheres))
+            (logclear! (-> this flags) (nick-nav-flags display-spheres))
+            )
+          )
+        )
+      )
+    (else ;; nav-network editor mode (TODO)
+
+      )
+    )
+  
+  ;; switch between edit/preview modes (L1 + up/down)
+  (when (cpad-hold? 0 l1)
+    (when (cpad-pressed? 0 up) ;; switch to preview mode
+      (set! (-> this mode) (nick-nav-mode preview))
+      )
+    (when (cpad-pressed? 0 down) ;; switch to edit mode
+      (set! (-> this mode) (nick-nav-mode edit))
+      )
+    )
+  (none)
+  )
+
+(defstate idle (nick-nav-editor)
+  :virtual #t
+  :enter (behavior ()
+    (start-editor! self)
+    )
+  :trans (behavior ()
+    (update-editor! self)
+    )
+  :code sleep-code
+  )
+
+(defbehavior nick-nav-editor-init-by-other nick-nav-editor ()
+  (set! *nick-nav-editor* (the (pointer nick-nav-editor) (process->ppointer self)))
+  (set! (-> self node-count) 0)
+  (set! (-> self mode) (nick-nav-mode edit))
+  (set! (-> self edit-mode) (nick-nav-edit-mode path))
+  (set! (-> self selected-node) -1)
+  (set! (-> self path-type) (nick-nav-path-type linear))
+  (go-virtual idle)
+  (none)
+  )
+
+(defun stop-nick-nav-editor ()
+  "Kill the nick-nav-editor process."
+  (remove-setting! 'allow-look-around)
+  (kill-by-type nick-nav-editor *default-pool*)
+  (set! *nick-nav-editor* (the (pointer nick-nav-editor) #f))
+  (none)
+  )
+
+(defun start-nick-nav-editor ()
+  "Start the nick-nav-editor process."
+  (if *nick-nav-editor*
+    (stop-nick-nav-editor)
+    )
+
+  (set! *nick-nav-editor* (process-spawn nick-nav-editor :from *pc-dead-pool*))
+  (none)
+  )
