@@ -4665,6 +4665,14 @@
                                        0
                                        )
                      )
+            ;; added - print quat function
+            (function "Print Quat" #f ,(lambda ((arg0 int) (arg1 debug-menu-msg) (arg2 float))
+                                       (let ((v1-0 (-> *target* root quat)))
+                                         (format #t "~6,,2f ~6,,2f ~6,,2f ~6,,2f~%" (-> v1-0 x) (-> v1-0 y) (-> v1-0 z) (-> v1-0 w))
+                                         )
+                                       0
+                                       )
+                     )
            (flag "Goggles" #f ,(lambda ((arg0 int) (arg1 debug-menu-msg) (arg2 float))
                                  (when (= arg1 (debug-menu-msg press))
                                    (cond
@@ -6832,6 +6840,23 @@
             (kill-by-type editable-player *active-pool*)
             (process-spawn editable-player :init editable-player-init #f :name "editable-player" :to *entity-pool*)
             (set-master-mode 'game)
+            )
+         )
+        ;; added - Finish Game and Menu options in popup menu
+        (function
+          "Menu"
+          #f
+         ,(lambda ()
+            (debug-menu-context-send-msg *debug-menu-context* (debug-menu-msg activate) (debug-menu-dest activation))
+            (debug-menu-context-send-msg *popup-menu-context* (debug-menu-msg deactivate) (debug-menu-dest activation))
+            )
+         )
+        (function
+         "Finish Game"
+         #f
+         ,(lambda ()
+            (task-close! "desert-final-boss-resolution")
+            (task-close! "city-win-introduction")
             )
          )
        )

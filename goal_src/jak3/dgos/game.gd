@@ -364,6 +364,7 @@
   "subtitle3-h.o" ;; added
   "subtitle3.o" ;; added
   "input-display.o" ;;added ;;mod-base-change
+  "functions-util.o" ;; added
   "main.o"
   "collide-cache.o"
   "collide-debug.o"
@@ -501,4 +502,5 @@
   "orb-placer.o"  ;; added
   "mod-custom-code.o" ;; added
   "mod-debug.o" ;; added
+  ;"custom-music-player.o" ;; added
  ))
