@@ -427,6 +427,43 @@
 ;; more complicated actors like jak that make a lot of use of animation blending can have 24+ channels.
 (build-actor "test-actor" :gen-mesh #t)
 
+#|
+(build-custom-level "lfortest")
+;; the DGO file
+(custom-level-cgo "LFT.DGO" "lfortest/lfortest.gd")
+|#
+
+#|
+(build-custom-level "lctyturret")
+;; the DGO file
+(goal-src "levels/city/destroy-turret/cty-destroy-kg-turret.gc" "process-focusable")
+(custom-level-cgo "LCT.DGO" "lctyturret/lctyturret.gd")
+|#
+
+#|
+(build-custom-level "sewb-elev")
+;; the DGO file
+(custom-level-cgo "SWE.DGO" "sewb-elev/sewb-elev.gd")
+|#
+
+#|
+(build-custom-level "ate-elev")
+;; the DGO file
+(custom-level-cgo "ATV.DGO" "ate-elev/ate-elev.gd")
+|#
+
+#|
+(build-custom-level "ato-actors")
+;; the DGO file
+(custom-level-cgo "ATA.DGO" "ato-actors/ato-actors.gd")
+|#
+
+#|
+(build-custom-level "skatepark")
+;; the DGO file
+(custom-level-cgo "SKT.DGO" "skatepark/skatepark.gd")
+|#
+
 ;;;;;;;;;;;;;;;;;;;;;
 ;; ANIMATIONS
 ;;;;;;;;;;;;;;;;;;;;;
