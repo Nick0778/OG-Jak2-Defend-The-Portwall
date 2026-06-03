@@ -8536,6 +8536,7 @@
               :on-complete #f
               :on-fail #f
               )
+            ;:borrow '((ctywide 1 lwided special)) ;; added - package containing roboguard art-group
             :borrow '()
             :open? #f
             :on-close #f
@@ -8580,6 +8581,7 @@
               :on-fail #f
               :end-sphere (new 'static 'sphere :x 195072.81 :y 223707.95 :z -6889803.0 :r 28672.0)
               )
+            ;:borrow '((ctywide 1 lwided special)) ;; added - package containing roboguard art-group
             :borrow '()
             :open? #f
             :on-close #f
@@ -8639,6 +8641,7 @@
             :task-mask (task-mask task1)
             :on-open #f
             :info #f
+            ;:borrow '((ctywide 1 lwided special)) ;; added - package containing roboguard art-group
             :borrow '()
             :open? #f
             :on-close #f

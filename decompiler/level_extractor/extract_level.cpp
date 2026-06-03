@@ -382,6 +382,27 @@ void extract_common(const ObjectFileDB& db,
   }
 }
 
+/*!
+ * Extract stuff found in GAME.CGO.
+ * Even though GAME.CGO isn't technically a level, the decompiler/loader treat it like one,
+ * but the bsp stuff is just empty. It will contain only textures/art groups.
+ */
+void extract_single_ag(const std::string& dgo_name,
+                       const std::string& ag_name,
+                       const ObjectFileDB& db,
+                       const TextureDB& tex_db,
+                       tfrag3::Level& lvl) {
+  auto dgo = db.obj_files_by_dgo.at(dgo_name);
+  for (const auto& file : dgo) {
+    if (file.name == ag_name) {
+      const auto& ag_file = db.lookup_record(file);
+      MercSwapInfo swapped_info;
+      extract_merc(ag_file, tex_db, db.dts, extract_tex_remap(db, dgo_name), lvl, false,
+                   db.version(), swapped_info);
+    }
+  }
+}
+
 void extract_from_level(const ObjectFileDB& db,
                         const TextureDB& tex_db,
                         const std::string& dgo_name,
@@ -400,6 +421,9 @@ void extract_from_level(const ObjectFileDB& db,
   auto bsp_header = extract_bsp_from_level(db, tex_db, dgo_name, config, level_data);
   extract_art_groups_from_level(db, tex_db, bsp_header.texture_remap_table, dgo_name, level_data,
                                 art_group_data);
+  
+  // art groups to extract into COMMON
+  extract_single_ag("CAS.DGO", "roboguard-ag", db, tex_db, level_data);
 
   Serializer ser;
   level_data.serialize(ser);

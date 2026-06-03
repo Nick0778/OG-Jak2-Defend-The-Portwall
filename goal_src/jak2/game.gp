@@ -308,6 +308,10 @@
 (goal-src "levels/test-zone/test-zone-obs.gc" "process-focusable")
 (custom-level-cgo "TSZ.DGO" "test-zone/testzone.gd")
 
+(build-custom-level "lwided")
+;; the DGO file
+(custom-level-cgo "LWD.DGO" "lwided/lwided.gd")
+
 ;; generate the art group for a custom actor.
 ;; requires a .glb model file in custom_assets/jak1/models/custom_levels
 ;; options:
