@@ -80,6 +80,14 @@
                 :forbid-when #f
                 :on-activate #f
                 )
+              (static-warp-gate-menu-entry
+                :level-name 'factoryd
+                :continue-name "factoryd-warp"
+                :text-id (text-id factory-name) ;"War Factory"
+                :allow-when (lambda () (task-closed? "desert-final-boss-resolution"))
+                :forbid-when #f
+                :on-activate #f
+                )
               )
   )
 
@@ -233,6 +241,43 @@
                 :continue-name "templed-warp"
                 :text-id (text-id temple-name-ruins) ;"Temple (Ruins)"
                 :allow-when (lambda () (task-closed? "temple-defend-resolution")) ;; third temple mission required
+                :forbid-when #f
+                :on-activate #f
+                )
+              )
+  )
+
+;; factoryd warp-gate
+(define *fac-warp-effect-1-menu-list* (new 'static 'boxed-array :type warp-gate-menu-entry
+              (static-warp-gate-menu-entry
+                :level-name 'vinroom
+                :continue-name "vinroom-warp"
+                :text-id (text-id vinroom-name) ;"Power Station"
+                :allow-when (lambda () (task-closed? "desert-final-boss-resolution")) 
+                :forbid-when #f
+                :on-activate #f
+                )
+              (static-warp-gate-menu-entry
+                :level-name 'templex
+                :continue-name "templex-warp"
+                :text-id (text-id temple-name-entry) ;"Temple (Entrance)"
+                :allow-when (lambda () (task-closed? "desert-final-boss-resolution"))
+                :forbid-when #f
+                :on-activate #f
+                )
+              (static-warp-gate-menu-entry 
+                :level-name 'templeb
+                :continue-name "templeb-warp"
+                :text-id (text-id temple-name-oracle) ;"Temple (Oracle)"
+                :allow-when (lambda () (task-closed? "desert-final-boss-resolution"))
+                :forbid-when #f
+                :on-activate #f
+                )
+              (static-warp-gate-menu-entry
+                :level-name 'templed
+                :continue-name "templed-warp"
+                :text-id (text-id temple-name-ruins) ;"Temple (Ruins)"
+                :allow-when (lambda () (task-closed? "desert-final-boss-resolution"))
                 :forbid-when #f
                 :on-activate #f
                 )

@@ -3471,16 +3471,23 @@
                           (send-event self 'front))
                 (want-load 'ctyslumc 'ctywide-ff 'freehq))))))
 
-        ;; fac-elevator-a-1 - on-notice
-        (set-pair-script! "fac-elevator-a-1" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'bottom) (send-event self 'go-dormant))))
+        (when (= (level-status? *level* 'lfacrm2 #f) 'active)
+          ;; fac-elevator-a-1 - on-notice
+          (set-pair-script! "fac-elevator-a-1" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'bottom) (send-event self 'go-dormant))))
+          ;; fac-elevator-a-1 - on-deactivate
+          (set-pair-script! "fac-elevator-a-1" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
 
-        ;; fac-elevator-a-2 - on-notice
-        (when (= (-> (level-get-target-inside *level*) name) 'factoryc)
+          ;; fac-elevator-a-2 - on-notice
           (set-pair-script! "fac-elevator-a-2" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'top) (send-event self 'go-dormant))))
-          )
+          ;; fac-elevator-a-2 - on-deactivate
+          (set-pair-script! "fac-elevator-a-2" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
 
-        ;; fac-warp-effect-1 - add-data-to-entity! - on-notice
-        (add-data-to-entity! "fac-warp-effect-1" 'on-notice 1 pair (the pointer '(when (task-closed? "desert-final-boss-resolution") '("vinroom-warp" #f #f)))))
+          ;; lfacrm2 region hacks + elevators up/down cameras hacks
+          (set-region-data! 1314 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-load 'factorya 'factoryc)))
+          (set-region-data! 1313 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-display 'factoryc 'display)))
+          (add-data-to-entity! "fac-elevator-a-1" 'on-up   1 pair (the pointer '(begin (send-event self 'use-camera "camera-318"))))
+          (add-data-to-entity! "fac-elevator-a-2" 'on-down 1 pair (the pointer '(begin (send-event self 'use-camera "camera-319"))))
+          )
 
         ;; Temple to Eco Mine
 
@@ -3555,15 +3562,6 @@
           (when (task-closed? "comb-travel-return-resolution")
             (task-node-open! (game-task-node comb-travel-return-introduction) 'event)
             )
-          )
-
-        ;; lfacrm2 region hacks + elevators up/down cameras hacks
-        
-        (when (= (level-status? *level* 'lfacrm2 #f) 'active)
-          (set-region-data! 1314 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-load 'factorya 'factoryc)))
-          (set-region-data! 1313 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-display 'factoryc 'display)))
-          (add-data-to-entity! "fac-elevator-a-1" 'on-up 1 pair (the pointer '(begin (send-event self 'use-camera "camera-318"))))
-          (add-data-to-entity! "fac-elevator-a-2" 'on-down 1 pair (the pointer '(begin (send-event self 'use-camera "camera-319"))))
           )
 
         ;;; EXTRA AND CRAZY STUFF

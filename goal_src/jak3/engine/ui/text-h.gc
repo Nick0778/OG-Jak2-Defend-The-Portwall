@@ -1625,6 +1625,7 @@
   (temple-name-oracle #x10004)
   (temple-name-ruins #x10005)
   (vinroom-name #x10006)
+  (factory-name #x10007)
 
   ;; menu stuff text
   (select-destination #x100000)
