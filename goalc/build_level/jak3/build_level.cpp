@@ -8,6 +8,7 @@
 #include "goalc/build_level/jak3/Entity.h"
 #include "goalc/build_level/jak3/FileInfo.h"
 #include "goalc/build_level/jak3/LevelFile.h"
+#include <decompiler/level_extractor/extract_collide_frags.h>
 
 namespace jak3 {
 bool run_build_level(const std::string& input_file,

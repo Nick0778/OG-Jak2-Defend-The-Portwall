@@ -10,6 +10,7 @@
 #include "goalc/build_level/jak2/Entity.h"
 #include "goalc/build_level/jak2/FileInfo.h"
 #include "goalc/build_level/jak2/LevelFile.h"
+#include <decompiler/level_extractor/extract_collide_frags.h>
 
 namespace jak2 {
 bool run_build_level(const std::string& input_file,
