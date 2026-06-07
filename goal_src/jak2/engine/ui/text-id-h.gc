@@ -853,7 +853,8 @@
   (pad-circle #x2001)
   (pad-x #x2002)
   (pad-square #x2003)
-
+  (scene-protect-blimp-res #x2004)
+  
   ;; destination names text
   (caspad-name #x10000)
   (nest-name #x10001)
