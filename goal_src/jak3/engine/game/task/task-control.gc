@@ -3471,23 +3471,25 @@
                           (send-event self 'front))
                 (want-load 'ctyslumc 'ctywide-ff 'freehq))))))
 
-        (when (= (level-status? *level* 'lfacrm2 #f) 'active)
-          ;; fac-elevator-a-1 - on-notice
-          (set-pair-script! "fac-elevator-a-1" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'bottom) (send-event self 'go-dormant))))
-          ;; fac-elevator-a-1 - on-deactivate
-          (set-pair-script! "fac-elevator-a-1" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
-
-          ;; fac-elevator-a-2 - on-notice
-          (set-pair-script! "fac-elevator-a-2" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'top) (send-event self 'go-dormant))))
-          ;; fac-elevator-a-2 - on-deactivate
-          (set-pair-script! "fac-elevator-a-2" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
-
           ;; lfacrm2 region hacks + elevators up/down cameras hacks
-          (set-region-data! 1314 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-load 'factorya 'factoryc)))
-          (set-region-data! 1313 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-display 'factoryc 'display)))
-          (add-data-to-entity! "fac-elevator-a-1" 'on-up   1 pair (the pointer '(begin (send-event self 'use-camera "camera-318"))))
-          (add-data-to-entity! "fac-elevator-a-2" 'on-down 1 pair (the pointer '(begin (send-event self 'use-camera "camera-319"))))
-          )
+          (when (= (level-status? *level* 'lfacrm2 #f) 'active)
+            ;; fac-elevator-a-1 - on-notice
+            (set-pair-script! "fac-elevator-a-1" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'bottom) (send-event self 'go-dormant))))
+            ;; fac-elevator-a-1 - on-deactivate
+            (set-pair-script! "fac-elevator-a-1" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
+
+            ;; fac-elevator-a-2 - on-notice
+            (set-pair-script! "fac-elevator-a-2" 'on-notice '((when (task-closed? "city-win-resolution") (send-event self 'move-to 'top) (send-event self 'go-dormant))))
+            ;; fac-elevator-a-2 - on-deactivate
+            (set-pair-script! "fac-elevator-a-2" 'on-deactivate '((when #t (send-event self 'use-camera #f))))
+
+            ;; lfacrm2 region hacks + elevators up/down cameras hacks
+            (set-region-data! 1314 'on-enter '(when (task-closed? "desert-final-boss-resolution") (want-load 'factorya 'factoryc)))
+            (set-region-data! 1313 'on-enter '(when (task-closed? "desert-final-boss-resolution") (want-display 'factoryc 'display)))
+            (add-data-to-entity! "fac-elevator-a-1" 'on-up   1 pair (the pointer '(begin (send-event self 'use-camera "camera-318"))))
+            (add-data-to-entity! "fac-elevator-a-2" 'on-down 1 pair (the pointer '(begin (send-event self 'use-camera "camera-319"))))
+            )
+        )
 
         ;; Temple to Eco Mine
 
@@ -3497,8 +3499,8 @@
             (set-pair-script! "tpl-mardoor-4" 'on-notice '((and (task-closed? "desert-final-boss-resolution") (not (task-closed? "city-win-resolution"))) '(templea templec)))
             )
           (when (= (-> (level-get-target-inside *level*) name) 'templea)
-            (set-region-data! 1372 "on-enter" '(when (task-closed? "desert-final-boss-resolution") (want-load 'templea 'templeb 'templec) (want-display 'templeb 'display) (want-display 'templec 'display)))
-            (set-region-data! 1372 "on-exit" '(when (task-closed? "desert-final-boss-resolution") (want-display 'templec #f)))
+            (set-region-data! 1372 'on-enter '(when (task-closed? "desert-final-boss-resolution") (want-load 'templea 'templeb 'templec) (want-display 'templeb 'display) (want-display 'templec 'display)))
+            (set-region-data! 1372 'on-exit '(when (task-closed? "desert-final-boss-resolution") (want-display 'templec #f)))
             )
   
           (set-pair-script! "tpl-door-a-15" 'on-notice '((not (task-closed? "city-win-resolution")) '(templec)))
@@ -3563,7 +3565,7 @@
             (task-node-open! (game-task-node comb-travel-return-introduction) 'event)
             )
           )
-
+      
         ;;; EXTRA AND CRAZY STUFF
 
         ;; Sewer locked airlock
