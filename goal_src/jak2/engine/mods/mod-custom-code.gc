@@ -21,6 +21,47 @@
     ;; Begin function defintions.
     ;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+    ;; hatkid's custom region don't work properly with the data, so I'm going to use this instead 
+    (defun set-region-data! ((id int) (event symbol) (data pair))
+      (let ((region (region-lookup-by-id id)))
+        (when region
+          (cond
+            ((= event 'on-enter)
+              (set! (-> region on-enter) data)
+              )
+            ((= event 'on-inside)
+              (set! (-> region on-inside) data)
+              )
+            ((= event 'on-exit)
+              (set! (-> region on-exit) data)
+              )
+            (else
+              (format 0 "ERROR: invalid event ~A!~%" event)
+              )
+            )
+          )
+        )
+      (none)
+      )
+
+    (defun test-zone-regions ()
+      ;; sphere region
+      (set-region-data! 1 'on-enter '(begin (print 'enter1) (send-event (actor-group 2) 'none)))
+      (set-region-data! 1 'on-inside '(begin (sound-play-loop "punch") (sound-play-loop "spin")))
+      (set-region-data! 1 'on-exit '(print 'exit1))
+
+      ;; face region
+      (set-region-data! 2 'on-enter '(begin (print 'enter14) (send-event "test-actor" 'rot)))
+
+      ;; water sphere region
+      ;; I did a small hack in script.gc in order to get this working
+      (set-region-data! 3 'on-inside '(water water-anim "water-anim-test-zone-1" (swim wade)))
+
+      ;; water volume region
+      (set-region-data! 4 'on-inside '(water height 0 (swim wade)))
+      (none)
+      )
+
     (defun runs-every-frame ()
       ;; (increase-power-cell-by-one) This is a call to increase-power-cell-by-one defined in mod-common-functions.gc
 
@@ -43,6 +84,9 @@
 
       (custom-tasks-hacks) ;; added - hacks for custom tasks
       
+      ;; regions
+      (test-zone-regions)
+
       (none)
       )
 
