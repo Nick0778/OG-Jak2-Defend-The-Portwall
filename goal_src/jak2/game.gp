@@ -314,6 +314,19 @@
 ;; the DGO file
 (custom-level-cgo "LWD.DGO" "lwided/lwided.gd")
 
+;; atoll custom task level
+(build-custom-level "latoturret")
+(goal-src "levels/custom-tasks/atoll/atoll-destroy-obs.gc" "process-focusable") ;; mission actors code
+(goal-src "levels/custom-tasks/atoll/atoll-destroy-turret.gc" "process-focusable") ;; mission code
+(custom-level-cgo "LAT.DGO" "latoturret/latoturret.gd")
+
+;; sewer custom task level
+(build-custom-level "lsigsew")
+(goal-src "levels/custom-tasks/sewer/sig-sewer-h.gc" "process-focusable") ;; type and method definitions code
+(goal-src "levels/custom-tasks/sewer/sig-sewer-util-funcs.gc" "process-focusable") ;; some util functions code
+(goal-src "levels/custom-tasks/sewer/sig6-course.gc" "process-focusable") ;; bot course code
+(custom-level-cgo "LSS.DGO" "lsigsew/lsigsew.gd")
+
 ;; generate the art group for a custom actor.
 ;; requires a .glb model file in custom_assets/jak1/models/custom_levels
 ;; options:

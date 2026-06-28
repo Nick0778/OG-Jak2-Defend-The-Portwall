@@ -260,6 +260,9 @@
   "2003": "<PAD_SQUARE>",
   "2004": "Torn's Symbols",
 
+  "3000": "Destroy Turrets in <COLOR_WHITE>Pumping Station",
+  "3001": "Protect Sig in <COLOR_WHITE>Sewers",
+
   "10000": "Landing Pad",
   "10001": "Metal Head Nest",
   "10002": "Haven City Port",

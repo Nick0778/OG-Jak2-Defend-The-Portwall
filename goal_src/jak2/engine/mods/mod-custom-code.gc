@@ -40,6 +40,8 @@
       (when *debug-segment*
         (orb-placer-maintenance)
         )
+
+      (custom-tasks-hacks) ;; added - hacks for custom tasks
       
       (none)
       )

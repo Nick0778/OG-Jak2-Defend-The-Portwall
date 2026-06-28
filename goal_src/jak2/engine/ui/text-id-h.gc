@@ -854,6 +854,10 @@
   (pad-x #x2002)
   (pad-square #x2003)
   (scene-protect-blimp-res #x2004)
+
+  ;; custom task progress texts
+  (progress-missions-atoll-destroy-turrets #x3000) ;; "Destroy turrets in Pumping Station"
+  (progress-missions-sewer-sig #x3001) ;; "Protect Sig in Sewers"
   
   ;; destination names text
   (caspad-name #x10000)
