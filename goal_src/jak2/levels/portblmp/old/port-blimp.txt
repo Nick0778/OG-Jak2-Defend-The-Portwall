@@ -40,10 +40,10 @@
    (sink-interp            float)
    (num-shots-available    float)
    (last-shot-gained       time-frame)
-   (torn                   (pointer port-turret))
+   (torn                   (pointer manipy))
    (target-y               float)
-   (channel                uint8)
-   (id                     uint32)
+   (channel                gui-channel)
+   (id                     sound-id)
    (last-speech            uint32)
    (turret-state           uint32)
    (next-turret-state      uint32)
@@ -81,80 +81,35 @@
   )
 
 (defun new-wave-speech ((arg0 port-turret))
-  (when (= (get-status *gui-control* (the-as sound-id (-> arg0 id))) (gui-status unknown))
+  (when (= (get-status *gui-control* (-> arg0 id)) (gui-status unknown))
     (let ((v1-3 (rand-vu-int-count 9)))
       (cond
         ((zero? v1-3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn018" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn018" -99.0 0))
          )
         ((= v1-3 1)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn022" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn022" -99.0 0))
          )
         ((= v1-3 2)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn023" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn023" -99.0 0))
          )
         ((= v1-3 3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn026" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn026" -99.0 0))
          )
         ((= v1-3 4)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn033" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn033" -99.0 0))
          )
         ((= v1-3 5)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn037" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn037" -99.0 0))
          )
         ((= v1-3 6)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn038" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn038" -99.0 0))
          )
         ((= v1-3 7)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn039" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn039" -99.0 0))
          )
         ((= v1-3 8)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn047" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn047" -99.0 0))
          )
         )
       )
@@ -163,80 +118,35 @@
   )
 
 (defun jak-hit-speech ((arg0 port-turret))
-  (when (= (get-status *gui-control* (the-as sound-id (-> arg0 id))) (gui-status unknown))
+  (when (= (get-status *gui-control* (-> arg0 id)) (gui-status unknown))
     (let ((v1-3 (rand-vu-int-count 9)))
       (cond
         ((zero? v1-3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn019" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn019" -99.0 0))
          )
         ((= v1-3 1)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn029" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn029" -99.0 0))
          )
         ((= v1-3 2)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn030" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn030" -99.0 0))
          )
         ((= v1-3 3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn034" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn034" -99.0 0))
          )
         ((= v1-3 4)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn035" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn035" -99.0 0))
          )
         ((= v1-3 5)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn040" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn040" -99.0 0))
          )
         ((= v1-3 6)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn049" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn049" -99.0 0))
          )
         ((= v1-3 7)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn052" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn052" -99.0 0))
          )
         ((= v1-3 8)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn056" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn056" -99.0 0))
          )
         )
       )
@@ -245,26 +155,16 @@
   )
 
 (defun jak-miss-speech ((arg0 port-turret))
-  (let ((a2-0 (get-status *gui-control* (the-as sound-id (-> arg0 id)))))
+  (let ((a2-0 (get-status *gui-control* (-> arg0 id))))
     (when (= a2-0 (gui-status unknown))
       (format 0 "status ~D~%" a2-0)
       (let ((v1-2 (rand-vu-int-count 2)))
         (cond
           ((zero? v1-2)
-           (set! (-> arg0 id)
-                 (the-as
-                   uint
-                   (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn048" -99.0 0)
-                   )
-                 )
+           (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn048" -99.0 0))
            )
           ((= v1-2 1)
-           (set! (-> arg0 id)
-                 (the-as
-                   uint
-                   (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn051" -99.0 0)
-                   )
-                 )
+           (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn051" -99.0 0))
            )
           )
         )
@@ -274,32 +174,17 @@
   )
 
 (defun ship-close-speech ((arg0 port-turret))
-  (when (= (get-status *gui-control* (the-as sound-id (-> arg0 id))) (gui-status unknown))
+  (when (= (get-status *gui-control* (-> arg0 id)) (gui-status unknown))
     (let ((v1-3 (rand-vu-int-count 3)))
       (cond
         ((zero? v1-3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn028" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn028" -99.0 0))
          )
         ((= v1-3 1)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn053" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn053" -99.0 0))
          )
         ((= v1-3 2)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn057" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn057" -99.0 0))
          )
         )
       )
@@ -308,24 +193,14 @@
   )
 
 (defun help-speech ((arg0 port-turret))
-  (when (= (get-status *gui-control* (the-as sound-id (-> arg0 id))) (gui-status unknown))
+  (when (= (get-status *gui-control* (-> arg0 id)) (gui-status unknown))
     (let ((v1-3 (rand-vu-int-count 2)))
       (cond
         ((zero? v1-3)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn017" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn017" -99.0 0))
          )
         ((= v1-3 1)
-         (set! (-> arg0 id)
-               (the-as
-                 uint
-                 (add-process *gui-control* arg0 (the-as gui-channel (-> arg0 channel)) (gui-action play) "torn020" -99.0 0)
-                 )
-               )
+         (set! (-> arg0 id) (add-process *gui-control* arg0 (-> arg0 channel) (gui-action play) "torn020" -99.0 0))
          )
         )
       )
@@ -341,7 +216,7 @@
   )
 
 (defpart 4775
-  :init-specs ((:texture (new 'static 'texture-id :index #xbc :page #xc))
+  :init-specs ((:texture (glow-hotdot effects))
     (:num 1.0)
     (:x (meters 0) (meters 2))
     (:y (meters 1))
@@ -363,7 +238,7 @@
   )
 
 (defpart 4774
-  :init-specs ((:texture (new 'static 'texture-id :page #xc))
+  :init-specs ((:texture (bigpuff effects))
     (:birth-func 'birth-func-texture-group)
     (:num 0.5)
     (:x (meters 0) (meters 4))
@@ -417,7 +292,6 @@
   :init-specs ((:fade-r 0.0) (:fade-g 0.0) (:fade-b 0.0) (:fade-a -0.03 -0.24))
   )
 
-;; failed to figure out what this is:
 (defskelgroup skel-port-metal-head-boat port-metal-head-boat 0 2
               ((1 (meters 999999)))
               :bounds (static-spherem 0 0 0 110)
@@ -579,48 +453,14 @@
              ((>= (-> self hit-count) (-> self hit-max))
               (jak-hit-speech (the-as port-turret (-> self parent 0)))
               (+! (-> (the-as port-turret (-> self parent 0)) ships-launched) -1)
-              (let ((gp-0 (get-process *default-dead-pool* part-tracker #x4000)))
-                (when gp-0
-                  (let ((t9-2 (method-of-type part-tracker activate)))
-                    (t9-2
-                      (the-as part-tracker gp-0)
-                      *entity-pool*
-                      (symbol->string (-> part-tracker symbol))
-                      (the-as pointer #x70004000)
-                      )
-                    )
-                  (let ((t9-3 run-function-in-process)
-                        (a0-12 gp-0)
-                        (a1-6 part-tracker-init)
-                        (a2-9 (-> *part-group-id-table* 1128))
-                        (a3-5 0)
-                        (t0-0 #f)
-                        (t1-0 #f)
-                        (t2-0 #f)
-                        (t3-0 *launch-matrix*)
-                        )
-                    (set! (-> t3-0 trans quad) (-> self root trans quad))
-                    ((the-as (function object object object object object object object object none) t9-3)
-                     a0-12
-                     a1-6
-                     a2-9
-                     a3-5
-                     t0-0
-                     t1-0
-                     t2-0
-                     t3-0
-                     )
-                    )
-                  (-> gp-0 ppointer)
-                  )
-                )
+              (part-tracker-spawn :to *entity-pool* :group group-port-mh-boat-smoke-trail :mat-joint (-> self root trans))
               (deactivate self)
               )
              (else
                (process-spawn
                  part-tracker
                  :init part-tracker-init
-                 (-> *part-group-id-table* 1128)
+                 group-port-mh-boat-smoke-trail
                  0
                  #f
                  #f
@@ -840,37 +680,34 @@
   (set! (-> this target-y) 0.0)
   (set! (-> this enable-controls) #f)
   (set! (-> this last-speech) (the-as uint 0))
-  (set! (-> this id) (the-as uint 0))
+  (set! (-> this id) (new 'static 'sound-id))
   (cond
     ((name= (-> this name) "port-turret-1")
      (set! (-> this who-am-i) (the-as uint 1))
      (set! (-> this path-event) *port-turret-1-path*)
-     (set! (-> this channel) (the-as uint 19))
+     (set! (-> this channel) (gui-channel jak))
      (set! (-> this turret-state) (the-as uint 0))
      (set! (-> this previous-turret-state) (the-as uint 1))
      )
     ((name= (-> this name) "port-turret-2")
      (set! (-> this who-am-i) (the-as uint 0))
-     (set! (-> this torn) (the-as
-                            (pointer port-turret)
-                            (process-spawn
-                              manipy
-                              :init manipy-init
-                              (-> this root trans)
-                              (-> this entity)
-                              (art-group-get-by-name *level* "skel-torn-highres" (the-as (pointer uint32) #f))
-                              #f
-                              t2-0
-                              :name "torn-highres"
-                              :to this
-                              )
+     (set! (-> this torn) (process-spawn
+                            manipy
+                            :init manipy-init
+                            (-> this root trans)
+                            (-> this entity)
+                            (art-group-get-by-name *level* "skel-torn-highres" (the-as (pointer uint32) #f))
+                            #f
+                            t2-0
+                            :name "torn-highres"
+                            :to this
                             )
            )
      (send-event (ppointer->process (-> this torn)) 'art-joint-anim "idle-turret" 0)
      (send-event (ppointer->process (-> this torn)) 'anim-mode 'loop)
      (set! (-> this roty) 5461.3335)
      (set! (-> this num-shots-available) 0.0)
-     (set! (-> this channel) (the-as uint 21))
+     (set! (-> this channel) (gui-channel sig)
      (set! (-> this turret-state) (the-as uint 2))
      (set! (-> this previous-turret-state) (the-as uint 1))
      )
@@ -1069,12 +906,7 @@
          (case (-> self turret-state)
            ((2)
             (when (= (-> self ships-launched) 1)
-              (set! (-> self id)
-                    (the-as
-                      uint
-                      (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn010" -99.0 0)
-                      )
-                    )
+              (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn010" -99.0 0))
               (set! (-> self next-turret-state) (the-as uint 3))
               (set! (-> self turret-state) (the-as uint 8))
               )
@@ -1084,7 +916,7 @@
               (cond
                 ((< (the-as uint a2-4) (the-as uint 3))
                  (format 0 "status ~D~%" a2-4)
-                 (set! (-> self id) (the-as uint 0))
+                 (set! (-> self id) (new 'static 'sound-id))
                  (set! (-> self turret-state) (the-as uint 4))
                  )
                 (else
@@ -1094,12 +926,7 @@
               )
             )
            ((4)
-            (set! (-> self id)
-                  (the-as
-                    uint
-                    (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn011" -99.0 0)
-                    )
-                  )
+            (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn011" -99.0 0))
             (set! (-> self next-turret-state) (the-as uint 5))
             (set! (-> self turret-state) (the-as uint 7))
             )
@@ -1108,19 +935,14 @@
             (send-event (process-by-name "port-turret-1" *active-pool*) 'start-shooting)
             (set! (-> self num-shots-available) 5.0)
             (set! (-> self target-y) 0.0)
-            (set! (-> self id)
-                  (the-as
-                    uint
-                    (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn012" -99.0 0)
-                    )
-                  )
+            (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn012" -99.0 0))
             (set! (-> self turret-state) (the-as uint 6))
             )
            ((6)
             (manage-torn-turret self (the-as none a1-2) (the-as float a2-2))
             )
            ((8)
-            (let ((a2-7 (get-status *gui-control* (the-as sound-id (-> self id)))))
+            (let ((a2-7 (get-status *gui-control* (-> self id))))
               (when (= a2-7 (gui-status active))
                 (format 0 "status ~D~%" a2-7)
                 (set! (-> self turret-state) (-> self next-turret-state))
@@ -1129,7 +951,7 @@
               )
             )
            ((7)
-            (let ((a2-8 (get-status *gui-control* (the-as sound-id (-> self id)))))
+            (let ((a2-8 (get-status *gui-control* (-> self id))))
               (when (= a2-8 (gui-status unknown))
                 (format 0 "status ~D~%" a2-8)
                 (set! (-> self turret-state) (-> self next-turret-state))
@@ -1195,21 +1017,16 @@
            ((zero? v1-34)
             (when (= (-> self ships-launched) 1)
               (set! (-> self last-speech) (the-as uint 1))
-              (set! (-> self id)
-                    (the-as
-                      uint
-                      (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn060" -99.0 0)
-                      )
-                    )
+              (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn060" -99.0 0))
               )
             )
            ((= v1-34 1)
-            (if (= (get-status *gui-control* (the-as sound-id (-> self id))) (gui-status active))
+            (if (= (get-status *gui-control* (-> self id)) (gui-status active))
                 (set! (-> self last-speech) (the-as uint 2))
                 )
             )
            ((= v1-34 2)
-            (if (< (the-as uint (get-status *gui-control* (the-as sound-id (-> self id)))) (the-as uint 3))
+            (if (< (the-as uint (get-status *gui-control* (-> self id))) (the-as uint 3))
                 (set! (-> self last-speech) (the-as uint 3))
                 )
             )
@@ -1218,20 +1035,10 @@
               (let ((v1-43 (rand-vu-int-count 2)))
                 (cond
                   ((zero? v1-43)
-                   (set! (-> self id)
-                         (the-as
-                           uint
-                           (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn061" -99.0 0)
-                           )
-                         )
+                   (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn061" -99.0 0))
                    )
                   ((= v1-43 1)
-                   (set! (-> self id)
-                         (the-as
-                           uint
-                           (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn062" -99.0 0)
-                           )
-                         )
+                   (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn062" -99.0 0))
                    )
                   )
                 )
@@ -1239,12 +1046,12 @@
               )
             )
            ((= v1-34 4)
-            (if (= (get-status *gui-control* (the-as sound-id (-> self id))) (gui-status active))
+            (if (= (get-status *gui-control* (-> self id)) (gui-status active))
                 (set! (-> self last-speech) (the-as uint 5))
                 )
             )
            ((= v1-34 5)
-            (when (< (the-as uint (get-status *gui-control* (the-as sound-id (-> self id)))) (the-as uint 3))
+            (when (< (the-as uint (get-status *gui-control* (-> self id))) (the-as uint 3))
               (set! (-> self path-direction) (the-as basic #t))
               (set! (-> self path-mode) (the-as uint 2))
               (set! (-> self roty-min) 0.0)
@@ -1265,12 +1072,7 @@
           (set-time! (-> self last-ship-launched))
           (+! (-> self ships-launched) 1)
           (if (zero? (-> self total-ships-launched))
-              (set! (-> self id)
-                    (the-as
-                      uint
-                      (add-process *gui-control* self (the-as gui-channel (-> self channel)) (gui-action play) "torn014" -99.0 0)
-                      )
-                    )
+              (set! (-> self id) (add-process *gui-control* self (-> self channel) (gui-action play) "torn014" -99.0 0))
               )
           (+! (-> self total-ships-launched) 1)
           (if (< 7 (-> self ships-launched))

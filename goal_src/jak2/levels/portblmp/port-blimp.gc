@@ -16,7 +16,7 @@
       (new 'static 'turret-path-event
         :pos (the-as float #x3fcedddd)
         :event-type 'set-rotyvv
-        :param (new 'static 'boxed-array :type float -4294965.896)
+        :param (new 'static 'boxed-array :type float -4294965.896) 
         )
       (new 'static 'turret-path-event
         :pos (the-as float #x3fe66666)
@@ -40,10 +40,8 @@
    (sink-interp            float)
    (num-shots-available    float)
    (last-shot-gained       time-frame)
-   (torn                   (pointer port-turret))
+   (torn                   (pointer manipy))
    (target-y               float)
-   (channel                uint8)
-   (id                     uint32)
    (last-speech            uint32)
    (turret-state           uint32)
    (next-turret-state      uint32)
@@ -52,7 +50,7 @@
    )
   )
 
-;; Torn new wave voice lines
+;; torn's new wave voice lines
 (defun new-wave-speech ((arg0 port-turret))
   (when (not (is-any-sound-playing?))
     (let ((v1-3 (rand-vu-int-count 9)))
@@ -90,7 +88,7 @@
   0
   )
 
-;; Torn voice lines when Jak destroy an metal head boat
+;; torn's voice lines when Jak destroy an metal head boat
 (defun jak-hit-speech ((arg0 port-turret))
   (when (not (is-any-sound-playing?))
     (let ((v1-3 (rand-vu-int-count 9)))
@@ -145,7 +143,7 @@
   0
   )
 
-;; Torn voice lines when the metal head boats are close to the portwall
+;; torn's voice lines when the metal head boats are close to the portwall
 (defun ship-close-speech ((arg0 port-turret))
   (when (not (is-any-sound-playing?))
     (let ((v1-3 (rand-vu-int-count 3)))
@@ -190,7 +188,7 @@
   )
 
 (defpart 4775
-  :init-specs ((:texture (new 'static 'texture-id :index #xbc :page #xc))
+  :init-specs ((:texture (glow-hotdot effects))
     (:num 1.0)
     (:x (meters 0) (meters 2))
     (:y (meters 1))
@@ -212,7 +210,7 @@
   )
 
 (defpart 4774
-  :init-specs ((:texture (new 'static 'texture-id :page #xc))
+  :init-specs ((:texture (bigpuff effects))
     (:birth-func 'birth-func-texture-group)
     (:num 0.5)
     (:x (meters 0) (meters 4))
@@ -386,7 +384,7 @@
 (defstate idle (port-metal-head-boat)
   :virtual #t
   :enter (behavior ()
-    (let ((v0-0 (the-as object (-> self draw color-mult)))) ;; Added - Make metal head boat black like in the prototype
+    (let ((v0-0 (the-as object (-> self draw color-mult)))) ;; added - black color for the boat like in the prototype build
                  (set! (-> (the-as rgbaf v0-0) x) 0.0)
                  (set! (-> (the-as rgbaf v0-0) y) 0.0)
                  (set! (-> (the-as rgbaf v0-0) z) 0.0)
@@ -414,48 +412,14 @@
              ((>= (-> self hit-count) (-> self hit-max))
               (jak-hit-speech (the-as port-turret (-> self parent 0)))
               (+! (-> (the-as port-turret (-> self parent 0)) ships-launched) -1)
-              (let ((gp-0 (get-process *default-dead-pool* part-tracker #x4000)))
-                (when gp-0
-                  (let ((t9-2 (method-of-type part-tracker activate)))
-                    (t9-2
-                      (the-as part-tracker gp-0)
-                      *entity-pool*
-                      (symbol->string (-> part-tracker symbol))
-                      (the-as pointer #x70004000)
-                      )
-                    )
-                  (let ((t9-3 run-function-in-process)
-                        (a0-12 gp-0)
-                        (a1-6 part-tracker-init)
-                        (a2-9 (-> *part-group-id-table* 1128))
-                        (a3-5 0)
-                        (t0-0 #f)
-                        (t1-0 #f)
-                        (t2-0 #f)
-                        (t3-0 *launch-matrix*)
-                        )
-                    (set! (-> t3-0 trans quad) (-> self root trans quad))
-                    ((the-as (function object object object object object object object object none) t9-3)
-                     a0-12
-                     a1-6
-                     a2-9
-                     a3-5
-                     t0-0
-                     t1-0
-                     t2-0
-                     t3-0
-                     )
-                    )
-                  (-> gp-0 ppointer)
-                  )
-                )
+              (part-tracker-spawn :to *entity-pool* :group group-port-mh-boat-smoke-trail :mat-joint (-> self root trans))
               (deactivate self)
               )
              (else
                (process-spawn
                  part-tracker
                  :init part-tracker-init
-                 (-> *part-group-id-table* 1128)
+                 group-port-mh-boat-smoke-trail
                  0
                  #f
                  #f
@@ -661,37 +625,31 @@
   (set! (-> this target-y) 0.0)
   (set! (-> this enable-controls) #f)
   (set! (-> this last-speech) (the-as uint 0))
-  (set! (-> this id) (the-as uint 0))
   (cond
     ((name= (-> this name) "port-turret-1")
      (set! (-> this who-am-i) (the-as uint 1))
      (set! (-> this path-event) *port-turret-1-path*)
-     (set! (-> this channel) (the-as uint 19))
      (set! (-> this turret-state) (the-as uint 0))
      (set! (-> this previous-turret-state) (the-as uint 1))
      )
     ((name= (-> this name) "port-turret-2")
      (set! (-> this who-am-i) (the-as uint 0))
-     (set! (-> this torn) (the-as
-                            (pointer port-turret)
-                            (process-spawn
-                              manipy
-                              :init manipy-init
-                              (-> this root trans)
-                              (-> this entity)
-                              (art-group-get-by-name *level* "skel-torn-highres" (the-as (pointer uint32) #f))
-                              #f
-                              t2-0
-                              :name "torn-highres"
-                              :to this
-                              )
+     (set! (-> this torn) (process-spawn
+                            manipy
+                            :init manipy-init
+                            (-> this root trans)
+                            (-> this entity)
+                            (art-group-get-by-name *level* "skel-torn-highres" (the-as (pointer uint32) #f))
+                            #f
+                            t2-0
+                            :name "torn-highres"
+                            :to this
                             )
            )
      (send-event (ppointer->process (-> this torn)) 'art-joint-anim "idle-turret" 0)
      (send-event (ppointer->process (-> this torn)) 'anim-mode 'loop)
      (set! (-> this roty) 5461.3335)
      (set! (-> this num-shots-available) 0.0)
-     (set! (-> this channel) (the-as uint 21))
      (set! (-> this turret-state) (the-as uint 2))
      (set! (-> this previous-turret-state) (the-as uint 1))
      )
@@ -798,7 +756,7 @@
      (seek! (-> this health) 0.0 (the-as float (-> arg3 param 0)))
      (activate! (-> this smush-control) 0.2 30 240 0.8 0.8 (-> *display* entity-clock))
      (cpad-set-buzz! (-> *cpad-list* cpads 0) 1 255 (seconds 0.5))
-     (sound-play "turret-take-hit") ;; Added - Turret's hit sound
+     (sound-play "turret-take-hit") ;; added - turret's hit sound
      )
     (('exit)
      (if (= (-> this path-u) 0.0)
@@ -831,7 +789,7 @@
             (a1-3 0.0)
             )
         (set! (-> arg0 target-y) (t9-2 a0-4 a1-3))
-        (base-turret-method-45 arg0 (the-as none a1-3) (the-as symbol arg2))
+        (base-turret-method-45 arg0 #f #t)
         )
       )
     (none)
@@ -858,7 +816,7 @@
              )
          (set! (-> self roty) (t9-2 a0-3 (the-as float a1-2) (the-as float a2-2)))
          (when (and (cpad-pressed? 0 triangle) (= (-> self ships-launched) 1))
-            ;; If there are custom audios playing, then, stop them
+            ;; added - if there are custom audios playing, then, stop them
             (if (is-any-sound-playing?) 
               (stop-all-sounds)
               )
@@ -1023,15 +981,15 @@
               (set! (-> self roty-min) 0.0)
               (set! (-> self roty-max) 0.0)
               (set! (-> self available-for-pickup) #f)
-              (remove-setting! 'music) ;; Added - Stop the music after beating the mission (Not in original)
+              (remove-setting! 'music) ;; added - stop the music after beating the mission
               (process-spawn scene-player :init scene-player-init "city-protect-blimp-res" #t #f)
               (set! (-> self last-speech) (the-as uint 6)) ;; Added - New state which fixes an black screen softlock after the cutscene ends
               )
             )
-          ((= v1-34 6) ;; Added - New state which fixes an black screen softlock after the cutscene ends
+          ((= v1-34 6) ;; added - new state which fixes an black screen softlock after the cutscene ends
             (go-virtual shutdown)
             (send-event *target* 'end-mode)
-            (set! (-> self path-u) 0.0) ;; Set turret's path position to the start
+            (set! (-> self path-u) 0.0) ;; set turret's path position to the start
             )
            )
          )
@@ -1043,7 +1001,7 @@
           (+! (-> self ships-launched) 1)
           (if (zero? (-> self total-ships-launched))
             (play-sound-file "TORN014.wav" (the int (* (-> *setting-control* user-default dialog-volume) 100.0)))
-            (set-setting! 'music 'danger4 0.0 0) ;; Added - Play a music during the mission
+            (set-setting! 'music 'danger4 0.0 0) ;; added - play a music during the mission
             )
           (+! (-> self total-ships-launched) 1)
           (if (< 7 (-> self ships-launched))
