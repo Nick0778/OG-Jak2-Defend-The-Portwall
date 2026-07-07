@@ -11,7 +11,7 @@
   (dotimes (i (-> this node-count))
     (let ((pos (-> this nodes i)))
       (format (clear *temp-string*) "~D" i)
-      (add-debug-text-3d #t (the-as bucket-id 318) *temp-string* pos (font-color orange) (the-as vector2h #f))
+      (add-debug-text-3d #t (bucket-id debug-no-zbuf1) *temp-string* pos (font-color orange) (the-as vector2h #f))
       )
     )
   (none)
@@ -30,10 +30,10 @@
              )
         (when (logtest? (-> this flags) (nick-path-flags display-spheres)) ;; display spheres only in edit mode
           (cond
-            (is-selected? (add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-orange*))
-            (is-last?     (add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-green*))
-            (is-closest?  (add-debug-sphere #t (bucket-id debug2) pos 4600.0 *color-yellow*))
-            (else         (add-debug-sphere #t (bucket-id debug2) pos 4096.0 *color-red*))
+            (is-selected? (add-debug-sphere #t (bucket-id debug) pos 4096.0 *color-orange*))
+            (is-last?     (add-debug-sphere #t (bucket-id debug) pos 4096.0 *color-green*))
+            (is-closest?  (add-debug-sphere #t (bucket-id debug) pos 4600.0 *color-yellow*))
+            (else         (add-debug-sphere #t (bucket-id debug) pos 4096.0 *color-red*))
             )
           )
         ;; draw the X
@@ -325,7 +325,7 @@
 (defmethod draw-menu ((this path-editor))
   "Draw a menu displaying the editor controls, info and status (preview or edit mode)."
   (with-dma-buffer-add-bucket ((buf (-> *display* frames (-> *display* on-screen) debug-buf))
-                               (bucket-id debug2)
+                               (bucket-id debug)
                                )
     (let* ((x 10)
           (y 40)
@@ -381,13 +381,13 @@
         
         ((= (-> this mode) (nick-path-mode moving-node)) ;; moving node mode
           (draw-string-xy "[L3 + triangle]: confirm position" buf x (+ y (* line-height 7)) (font-color white) (font-flags shadow))
-
+          
           (draw-string-xy "-----------------------------" buf x (+ y (* line-height 8)) (font-color white) (font-flags shadow))
           )
         
         (else ;; preview mode
           (draw-string-xy "[R1 + down]: switch to edit mode" buf x (+ y (* line-height 7)) (font-color white) (font-flags shadow))
-
+          
           (draw-string-xy "-----------------------------" buf x (+ y (* line-height 8)) (font-color white) (font-flags shadow))
           )
         )
