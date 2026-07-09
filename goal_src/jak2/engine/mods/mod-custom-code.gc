@@ -40,6 +40,9 @@
       (when *debug-segment*
         (orb-placer-maintenance)
         )
+
+      ;; defend the portwall stuff
+      (portblmp-hacks)
       
       (none)
       )

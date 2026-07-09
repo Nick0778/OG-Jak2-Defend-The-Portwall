@@ -1034,9 +1034,9 @@
             :play-continue "stadiumd-race-fail"
             :kiosk-play-continue #f
             )
-          ;; Added - task "city-defend-portwall" for the unused port mission
+          ;; added - task for the cut `Defend the Portwall` mission
           (new 'static 'game-task-info
-            :name "city-defend-portwall"
+            :name "city-protect-blimp"
             :text-name (text-id progress-missions-defend-port-wall)
             :pre-play-node (game-task-node city-protect-blimp-introduction)
             :kiosk-play-node (game-task-node city-protect-blimp-introduction)
@@ -12318,10 +12318,10 @@
                     )
             :on-close #f
             )
-          ;; Added - task-node "city-protect-blimp-introduction" restored from Jak 2 July Prototype
+          ;; added - task node for the cut `Defend the Portwall` mission
           (new 'static 'game-task-node-info
             :level 'city
-            :task (game-task city-defend-portwall)
+            :task (game-task city-protect-blimp)
             :name "city-protect-blimp-introduction"
             :when-open (new 'static 'boxed-array :type game-task-event
               (new 'static 'game-task-event
@@ -12365,10 +12365,10 @@
             :on-close #f
             :description (text-id progress-missions-defend-port-wall)
             )
-          ;; Added - task-node "city-protect-blimp-resolution" restored from Jak 2 July Prototype
+          ;; added - task node for the cut `Defend the Portwall` mission
           (new 'static 'game-task-node-info
             :level 'city
-            :task (game-task city-defend-portwall)
+            :task (game-task city-protect-blimp)
             :name "city-protect-blimp-resolution"
             :when-open (new 'static 'boxed-array :type game-task-event
               (new 'static 'game-task-event
