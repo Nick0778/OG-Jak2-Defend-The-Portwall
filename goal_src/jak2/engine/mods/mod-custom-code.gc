@@ -81,9 +81,11 @@
       (when *debug-segment*
         (orb-placer-maintenance)
         )
-
-      (custom-tasks-hacks) ;; added - hacks for custom tasks
       
+      ;; defend the portwall stuff
+      (portblmp-hacks)
+      ;; hacks for custom tasks
+      (custom-tasks-hacks)
       ;; regions
       (test-zone-regions)
 
