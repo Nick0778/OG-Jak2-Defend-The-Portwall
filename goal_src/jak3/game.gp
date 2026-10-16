@@ -426,6 +426,11 @@
 ;; - joint-channel: how many joint channels the actor should have. defaults to 6.
 ;; more complicated actors like jak that make a lot of use of animation blending can have 24+ channels.
 (build-actor "test-actor" :gen-mesh #t)
+;;gun-buoy
+(build-actor "gun-buoy" :gen-mesh #f)
+
+;; gun-buoy code
+(goal-src "engine/mods/common/gun-buoy.gc" "process-focusable")
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; ANIMATIONS

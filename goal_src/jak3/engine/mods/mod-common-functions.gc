@@ -363,3 +363,8 @@ if the result of rand-vu-int-range is 1, then DANCE! if it is not 1, then Don't 
     (spawn-skill vec amount bob?)
     )
   )
+
+;; map custom art-group art elt (borrowed from hatkid's jetboard legacy mod)
+(defmacro def-dummy-elt (group name idx)
+  `(defconstant ,name (-> self draw art-group data ,idx))
+  )
