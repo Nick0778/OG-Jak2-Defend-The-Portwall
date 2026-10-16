@@ -430,7 +430,7 @@
 (build-actor "gun-buoy" :gen-mesh #f)
 
 ;; gun-buoy code
-(goal-src "engine/mods/common/gun-buoy.gc" "process-focusable")
+(goal-src "engine/mods/j2-actors/common/gun-buoy.gc" "process-focusable")
 
 ;;;;;;;;;;;;;;;;;;;;;
 ;; ANIMATIONS
